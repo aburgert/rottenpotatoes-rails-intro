@@ -5,7 +5,7 @@
   - @all_ratings.each do |rating|
     = rating
     = check_box_tag "ratings[#{rating}]", 1##, true if !params.has_key? "ratings" || params["ratings"].find_index #{rating}) #supposed to check all boxes on fresh page or only previously selected boxe
-  = submit_tag 'Refresh'
+  = submit_tag 'Refresh', "id" => "ratings_submit"
 %table#movies
   %thead
     %tr
