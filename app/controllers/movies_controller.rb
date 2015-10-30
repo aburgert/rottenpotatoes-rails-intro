@@ -12,13 +12,22 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ['G','PG','PG-13','R']
-    @selected_ratings |= @all_ratings    #on first load
+    @selected_ratings = @all_ratings    #on first load
+    if ((session.has_key? "ratings") && !(params.has_key? "ratings"))
+      @selected_ratings = session["ratings"].keys
+    end
     if params.has_key? "ratings" #executes on every subsequent load (after implementing view-side code to check specified boxes in @selected_ratings)
       @selected_ratings = params["ratings"].keys
+      session["ratings"] = params["ratings"]
     end
     @movies = Movie.where(rating: @selected_ratings)
+    if session.has_key? "sort"
+      @movies = @movies.order(session["sort"])
+      handle_hilite(session["sort"]) unless params.has_key? "sort"
+    end
     if params.has_key? "sort"
       @movies = @movies.order(params["sort"])
+      session["sort"] = params["sort"]
       handle_hilite(params["sort"])
     end
     #if sort requested from params[], @movies = Movie.find
@@ -31,7 +40,7 @@ class MoviesController < ApplicationController
   
   def handle_hilite (hilite_class)
     if hilite_class == "title"
-           flash[:notice] = "handling hilite"
+           #flash[:notice] = "handling hilite"
 
       @titleClass = "hilite"
       @dateClass = ""
