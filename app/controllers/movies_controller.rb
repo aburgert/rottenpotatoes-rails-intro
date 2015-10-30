@@ -12,15 +12,14 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ['G','PG','PG-13','R']
+    @selected_ratings = @all_ratings    #on first load
+    if params.has_key? "ratings" #executes on every subsequent load (after implementing view-side code to check specified boxes in @selected_ratings)
+      @selected_ratings = params["ratings"].keys
+    end
+    @movies = Movie.where(rating: @selected_ratings)
     if params.has_key? "sort"
-      @movies = Movie.order(params["sort"])
-      
-     
+      @movies = @movies.order(params["sort"])
       handle_hilite(params["sort"])
-    elsif params.has_key? "ratings"
-      @movies = Movie.where(rating: params["ratings"].keys)
-    else
-      @movies = Movie.all
     end
     #if sort requested from params[], @movies = Movie.find
     #Movie.order("title") or Movie.order("release_date") determined programatically from params[]
