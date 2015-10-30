@@ -12,7 +12,7 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ['G','PG','PG-13','R']
-    @selected_ratings = @all_ratings    #on first load
+    @selected_ratings |= @all_ratings    #on first load
     if params.has_key? "ratings" #executes on every subsequent load (after implementing view-side code to check specified boxes in @selected_ratings)
       @selected_ratings = params["ratings"].keys
     end
