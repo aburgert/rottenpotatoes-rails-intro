@@ -35,7 +35,7 @@ class MoviesController < ApplicationController
     @movies = Movie.where(rating: @selected_ratings)
     if ((session.has_key? "sort") && !(params.has_key? "sort"))
       @movies = @movies.order(session["sort"])
-      #handle_hilite(session["sort"]) unless params.has_key? "sort"
+      handle_hilite(session["sort"])
       #flash.keep
       params["sort"] = session["sort"]
       #redirect_to "url = url + sort=release_date"
@@ -63,13 +63,13 @@ class MoviesController < ApplicationController
   end
   
   def handle_hilite (hilite_class)
-    if hilite_class == "title_header_cell"
+    if hilite_class == "title"
            #flash[:notice] = "handling hilite"
 
       @titleClass = "hilite"
       @dateClass = ""
       @ratingClass= ""
-    elsif hilite_class == "release_date_header_cell"
+    elsif hilite_class == "release_date"
       @titleClass = ""
       @dateClass = "hilite"
       @ratingClass= ""
