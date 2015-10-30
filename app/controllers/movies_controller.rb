@@ -14,6 +14,9 @@ class MoviesController < ApplicationController
     @all_ratings = ['G','PG','PG-13','R']
     if params.has_key? "sort"
       @movies = Movie.order(params["sort"])
+      
+     
+      handle_hilite(params["sort"])
     elsif params.has_key? "ratings"
       @movies = Movie.where(rating: params["ratings"].keys)
     else
@@ -25,6 +28,20 @@ class MoviesController < ApplicationController
 
   def new
     # default: render 'new' template
+  end
+  
+  def handle_hilite (hilite_class)
+    if hilite_class == "title"
+           flash[:notice] = "handling hilite"
+
+      @titleClass = "hilite"
+      @dateClass = ""
+      @ratingClass= ""
+    elsif hilite_class == "release_date"
+      @titleClass = ""
+      @dateClass = "hilite"
+      @ratingClass= ""
+    end
   end
 
   def create
