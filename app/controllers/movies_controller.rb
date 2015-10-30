@@ -15,15 +15,39 @@ class MoviesController < ApplicationController
     @selected_ratings = @all_ratings    #on first load
     if ((session.has_key? "ratings") && !(params.has_key? "ratings"))
       @selected_ratings = session["ratings"].keys
+      #flash.keep
+      ##redirect_to "url = url + utf8=✓& + ratings[#{rating}] for each rating
+      params["ratings"]= session["ratings"]
+      if(session.has_key?"sort" && (!params.has_key?"sort"))
+        redirect_to movies_path(utf8: session["utf8"], ratings: session["ratings"], sort: session["sort"])
+      elsif params.has_key?"sort"
+        redirect_to movies_path(utf8: session["utf8"], ratings: session["ratings"], sort: params["sort"])
+      else
+        redirect_to movies_path(utf8: session["utf8"], ratings: session["ratings"])
+      end
+      return
     end
     if params.has_key? "ratings" #executes on every subsequent load (after implementing view-side code to check specified boxes in @selected_ratings)
       @selected_ratings = params["ratings"].keys
+      session["utf8"] = params["utf8"]
       session["ratings"] = params["ratings"]
     end
     @movies = Movie.where(rating: @selected_ratings)
-    if session.has_key? "sort"
+    if ((session.has_key? "sort") && !(params.has_key? "sort"))
       @movies = @movies.order(session["sort"])
-      handle_hilite(session["sort"]) unless params.has_key? "sort"
+      #handle_hilite(session["sort"]) unless params.has_key? "sort"
+      #flash.keep
+      params["sort"] = session["sort"]
+      #redirect_to "url = url + sort=release_date"
+      #redirect_to movies_path(sort: session["sort"])
+      if(session.has_key?"ratings" && (!params.has_key?"ratings"))
+        redirect_to movies_path(utf8: session["utf8"], ratings: session["ratings"], sort: session["sort"])
+      elsif params.has_key?"ratings"
+        redirect_to movies_path(utf8: params["utf8"], ratings: params["ratings"], sort: params["sort"])
+      else
+        redirect_to movies_path(sort: session["sort"])
+      end
+      return
     end
     if params.has_key? "sort"
       @movies = @movies.order(params["sort"])
@@ -39,13 +63,13 @@ class MoviesController < ApplicationController
   end
   
   def handle_hilite (hilite_class)
-    if hilite_class == "title"
+    if hilite_class == "title_header_cell"
            #flash[:notice] = "handling hilite"
 
       @titleClass = "hilite"
       @dateClass = ""
       @ratingClass= ""
-    elsif hilite_class == "release_date"
+    elsif hilite_class == "release_date_header_cell"
       @titleClass = ""
       @dateClass = "hilite"
       @ratingClass= ""
